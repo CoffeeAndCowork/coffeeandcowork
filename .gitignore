@@ -1,0 +1,22 @@
+# Hugo build output
+/public/
+/resources/
+.hugo_build.lock
+
+# Hugo cache
+.cache/
+
+# Node (if using npm/postcss for assets)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
