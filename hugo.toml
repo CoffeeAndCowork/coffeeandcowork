@@ -3,11 +3,12 @@ languageCode = "en-us"
 title = "Coffee and Cowork"
 
 [params]
-  tagline = "Coffee, once a week, with other people."
+  # tagline = "Coffee, once a week, with other people."
+  tagline = "One coffee shop. No RSVP. No LinkedIn post about it afterward."
   # Update this each week — leave blank to hide the "next meetup" line
   nextLocation = ""
   nextDate = "Mondays, 10am–12pm"
   # Set to a Google Maps embed URL when a location is locked in; leave blank to hide the map
   mapEmbedURL = ""
   instagram = ""
-  bluesky = ""
+  bluesky = "https://bsky.app/profile/coffeeandcowork.bsky.social"
