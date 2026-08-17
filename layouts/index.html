@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ .Site.Title }}</title>
   <meta name="description" content="{{ .Site.Params.tagline }}">
+  <link rel="icon" type="image/png" href="/favicon.png">
   <style>
     :root {
       --black: #111;
@@ -25,6 +26,13 @@
       font-size: 1.6rem;
       font-weight: 700;
       letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .logo {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      height: auto;
       margin-bottom: 0.25rem;
     }
     .tagline {
@@ -99,7 +107,7 @@
 </head>
 <body>
 
-  <h1>{{ .Site.Title }}</h1>
+  <h1><img class="logo" src="/CoffeeAndCowork_LOGO.png" alt="{{ .Site.Title }}"></h1>
   <p class="tagline">{{ .Site.Params.tagline }}</p>
 
   <dl class="tldr">

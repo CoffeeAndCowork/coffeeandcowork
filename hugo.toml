@@ -10,5 +10,4 @@ title = "Coffee and Cowork"
   nextDate = "Mondays, 10am–12pm"
   # Set to a Google Maps embed URL when a location is locked in; leave blank to hide the map
   mapEmbedURL = ""
-  instagram = ""
   bluesky = "https://bsky.app/profile/coffeeandcowork.bsky.social"
