@@ -4,6 +4,10 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  schedule:
+    # 18:00 UTC ≈ 2pm America/Detroit (EDT) / 1pm (EST) — re-evaluates
+    # "next meetup" weekly even in weeks with no commit.
+    - cron: "0 18 * * 1"
 
 permissions:
   contents: read
@@ -23,7 +27,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "0.123.7"
+          hugo-version: "0.166.0"
           extended: false
       - name: Setup Pages
         id: pages

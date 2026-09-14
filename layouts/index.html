@@ -49,8 +49,15 @@
     }
     .tagline {
       color: var(--gray);
-      margin-bottom: 2.5rem;
+      margin-bottom: 1rem;
       font-size: 1rem;
+    }
+    .next-meetup-line {
+      margin-bottom: 2.5rem;
+      font-size: 0.95rem;
+    }
+    .next-meetup-line a {
+      color: var(--black);
     }
     .tldr {
       border-top: 2px solid var(--black);
@@ -125,6 +132,39 @@
   </h1>
   <p class="tagline">{{ .Site.Params.tagline }}</p>
 
+  {{ $rows := slice }}
+  {{ with readFile "data/locations.csv" }}
+    {{ $opts := dict "format" "csv" "targetType" "map" }}
+    {{ $rows = transform.Unmarshal $opts . }}
+  {{ end }}
+
+  {{ $today := now | time.In "America/Detroit" | time.Format "2006-01-02" }}
+
+  {{ $upcoming := slice }}
+  {{ range $rows }}
+    {{ if ge .date $today }}
+      {{ $upcoming = $upcoming | append . }}
+    {{ end }}
+  {{ end }}
+  {{ $upcoming = sort $upcoming "date" }}
+
+  {{ $next := "" }}
+  {{ if gt (len $upcoming) 0 }}
+    {{ $next = index $upcoming 0 }}
+  {{ end }}
+
+  {{ if $next }}
+    {{ if $next.street1 }}
+    <p class="next-meetup-line">
+      <a href="#next-meetup"><strong>Next meetup:</strong> {{ time.Format "02/January/2006" (time.AsTime $next.date) }}: {{ $next.name }}, {{ $next.street1 }}{{ if $next.street2 }}, {{ $next.street2 }}{{ end }}, {{ $next.city }}, {{ $next.state }} {{ $next.zip }} @ 10am Eastern</a>
+    </p>
+    {{ else }}
+    <p class="next-meetup-line">
+      <a href="#next-meetup"><strong>Next meetup:</strong> {{ $next.name }}</a>
+    </p>
+    {{ end }}
+  {{ end }}
+
   <dl class="tldr">
     <dt>What this is</dt>
     <dd>Coffee, once a week, with other people.</dd>
@@ -140,22 +180,39 @@
 
   <p>Bring a laptop if you want to look busy, or don't, and just talk to someone for an hour. Think of it as a casual work meetup or a low-key coworking session at your neighborhood third place, not a conference room. If you're hoping to pitch something, you'll have a bad time &mdash; everyone else came here to talk to people, not get sold to.</p>
 
-  {{ if .Site.Params.nextLocation }}
-  <div class="meetup">
+  {{ if not $next }}
+  <div class="meetup" id="next-meetup">
+    <h2>When</h2>
+    <div class="where">Mondays, 10am&ndash;12pm</div>
+    <div style="color: var(--gray); margin-top: 0.25rem;">Location posted weekly &mdash; check back or follow along.</div>
+  </div>
+  {{ else if not $next.street1 }}
+  <div class="meetup" id="next-meetup">
     <h2>Next meetup</h2>
-    <div class="where">{{ .Site.Params.nextLocation }}</div>
-    <div>{{ .Site.Params.nextDate }}</div>
-    {{ if .Site.Params.mapEmbedURL }}
-    <div class="map">
-      <iframe src="{{ .Site.Params.mapEmbedURL }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-    {{ end }}
+    <div class="where">{{ $next.name }}</div>
   </div>
   {{ else }}
-  <div class="meetup">
-    <h2>When</h2>
-    <div class="where">{{ .Site.Params.nextDate }}</div>
-    <div style="color: var(--gray); margin-top: 0.25rem;">Location posted weekly &mdash; check back or follow along.</div>
+  <div class="meetup" id="next-meetup">
+    <h2>Next meetup</h2>
+    <div class="where">
+      {{ if $next.CoffeeURL }}<a href="{{ $next.CoffeeURL }}" target="_blank" rel="noopener noreferrer">{{ $next.name }}</a>{{ else }}{{ $next.name }}{{ end }}
+    </div>
+    <div>{{ $next.street1 }}{{ if $next.street2 }}, {{ $next.street2 }}{{ end }}, {{ $next.city }}, {{ $next.state }} {{ $next.zip }}</div>
+    <div>{{ time.Format "02/January/2006" (time.AsTime $next.date) }}</div>
+    {{ $mapSrc := $next.mapEmbedURL }}
+    {{ if not $mapSrc }}
+      {{ $mapQuery := $next.GooglePlusCode }}
+      {{ if not $mapQuery }}
+        {{ $addrParts := slice $next.street1 }}
+        {{ if $next.street2 }}{{ $addrParts = $addrParts | append $next.street2 }}{{ end }}
+        {{ $addrParts = $addrParts | append $next.city (printf "%s %s" $next.state $next.zip) }}
+        {{ $mapQuery = delimit $addrParts ", " }}
+      {{ end }}
+      {{ $mapSrc = printf "https://maps.google.com/maps?q=%s&output=embed" ($mapQuery | urlquery) }}
+    {{ end }}
+    <div class="map">
+      <iframe src="{{ $mapSrc }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
   </div>
   {{ end }}
 
