@@ -138,11 +138,13 @@
     {{ $rows = transform.Unmarshal $opts . }}
   {{ end }}
 
-  {{ $today := now | time.In "America/Detroit" | time.Format "2006-01-02" }}
+  {{ $now := now | time.In "America/Detroit" }}
+  {{ $today := $now | time.Format "2006-01-02" }}
+  {{ $pastCutoff := ge $now.Hour 12 }}
 
   {{ $upcoming := slice }}
   {{ range $rows }}
-    {{ if ge .date $today }}
+    {{ if or (gt .date $today) (and (eq .date $today) (not $pastCutoff)) }}
       {{ $upcoming = $upcoming | append . }}
     {{ end }}
   {{ end }}
